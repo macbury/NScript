@@ -1,0 +1,21 @@
+require "nscript/version"
+require "docile"
+
+module NScript
+  def self.reset!
+    self.nodes.clear!
+  end
+end
+
+require "nscript/ext/boolean"
+
+require "nscript/node_builder/io_def"
+require "nscript/node_builder/var_def"
+require "nscript/node_builder/base"
+require "nscript/node_builder/manager"
+
+require "nscript/node"
+require "nscript/node/base"
+require "nscript/node/variable_pipeline"
+require "nscript/dsl"
+require "nscript/node"
