@@ -31,10 +31,14 @@ describe NScript do
   it "should define new example node with variables" do
     NScript.node :foo do
       var :bar, type: Integer, default: -2
+      var :foo, type: String, default: "Hello"
+      var :buzz, type: Boolean, default: true
     end
 
     test_node = NScript.nodes.build("base.foo")
 
-    test_node.var.bar.should eq(-2)
+    test_node.var.bar.should  eq(-2)
+    test_node.var.foo.should  eq("Hello")
+    test_node.var.buzz.should eq(true)
   end
 end

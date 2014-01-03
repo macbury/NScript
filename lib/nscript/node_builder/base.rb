@@ -41,7 +41,7 @@ module NScript::NodeBuilder
       node.name = @name
       node.setup_lifecycle_blocks(@run_block, @start_block, @stop_block)
       @variables.each do |var|
-        node.var.add(var)
+        node.var.register_var(var)
       end
       return node
     end
