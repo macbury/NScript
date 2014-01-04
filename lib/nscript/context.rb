@@ -8,6 +8,10 @@ module NScript
       @guid          = 0
     end
 
+    def variables
+      @variables 
+    end
+
     def notifications
       @notifications
     end

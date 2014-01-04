@@ -11,6 +11,10 @@ module NScript
       @vars = {}
     end
     
+    def keys
+      @vars.keys
+    end
+
     def setup(key, var)
       @vars[key] = var
     end

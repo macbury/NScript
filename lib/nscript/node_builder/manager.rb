@@ -13,10 +13,10 @@ module NScript::NodeBuilder
       @list[key]
     end
 
-    def build(key)
+    def build(context, key)
       builder = get(key)
       throw "Could not find builder name #{key}" if builder.nil?
-      builder.build
+      builder.build(context)
     end
 
     def all

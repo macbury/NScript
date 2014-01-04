@@ -2,8 +2,17 @@ module NScript::Node
   class Base
     attr_accessor :name
 
+    def initialize(context)
+      @context = context
+      @guid    = context.guid
+    end
+
+    def context
+      @context
+    end
+
     def var
-      @variable_pipeline ||= VariablePipeline.new
+      @variable_pipeline ||= VariablePipeline.new(@context, [name, @guid].join("."))
     end
 
     def setup_lifecycle_blocks(run_block=nil, start_block=nil, stop_block=nil)
