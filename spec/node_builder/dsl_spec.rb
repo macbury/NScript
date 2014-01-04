@@ -15,8 +15,7 @@ describe NScript do
   end
 
   it "should define new example node without callbacks" do
-    NScript.node :test do
-    end
+    NScript.node(:test) {}
 
     test_node = NScript.nodes.build("base.test")
     test_node.should_not be_nil
@@ -30,8 +29,8 @@ describe NScript do
 
   it "should define new example node with variables" do
     NScript.node :foo do
-      var :bar, type: Integer, default: -2
-      var :foo, type: String, default: "Hello"
+      var :bar,  type: Integer, default: -2
+      var :foo,  type: String,  default: "Hello"
       var :buzz, type: Boolean, default: true
     end
 
@@ -40,5 +39,8 @@ describe NScript do
     test_node.var.bar.should  eq(-2)
     test_node.var.foo.should  eq("Hello")
     test_node.var.buzz.should eq(true)
+
+    test_node.var.bar = 3
+    test_node.var.bar.should  eq(3)
   end
 end

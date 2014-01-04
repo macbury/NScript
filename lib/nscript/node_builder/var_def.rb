@@ -20,6 +20,18 @@ module NScript
         end
       end
 
+      def to_var
+        if @type == Integer
+          NScript::Var::Integer.new(@default)
+        elsif @type == Float
+          NScript::Var::Float.new(@default)
+        elsif @type == String
+          NScript::Var::String.new(@default)
+        else
+          NScript::Var::Boolean.new(@default)
+        end
+      end
+
       def type
         @type
       end

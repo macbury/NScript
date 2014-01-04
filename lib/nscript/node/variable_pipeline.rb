@@ -5,7 +5,7 @@ module NScript::Node
         var_def.default
       end
 
-      define_singleton_method "#{var_def.name}=" do
+      define_singleton_method "#{var_def.name.to_sym}=" do |val|
         
       end
     end
