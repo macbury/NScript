@@ -1,7 +1,8 @@
 module NScript
   class Notifications
-    def initialize
-      @events = {}
+    def initialize(backend)
+      @backend = backend
+      @events  = {}
     end
 
     def on(event, context, &block)
@@ -20,11 +21,11 @@ module NScript
       end
     end
 
-    def trigger(event)
+    def trigger(event, payload={})
       list = @events[event] || []
 
       list.each do |context,block| 
-        context.instance_eval(&block)
+        @backend.schedule { context.instance_exec(payload, &block) }
       end
     end
   end

@@ -28,3 +28,6 @@ require "nscript/variable_storage"
 require "nscript/node"
 require "nscript/context"
 require "nscript/notifications"
+
+require "nscript/backend/base"
+require "nscript/backend/sync"

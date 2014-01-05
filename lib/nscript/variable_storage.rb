@@ -6,7 +6,6 @@ module NScript
   end
 
   class VariableStorage
-
     def initialize
       @vars = {}
     end
@@ -42,6 +41,5 @@ module NScript
         raise VarNotFound.new(key)
       end
     end
-
   end
 end

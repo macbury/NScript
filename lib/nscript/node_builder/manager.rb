@@ -1,5 +1,10 @@
 module NScript::NodeBuilder
-  
+  class NodeNotFound < Exception
+    def initialize(name)
+      super("Node template not found with name: #{name.inspect}")
+    end
+  end
+
   class Manager
     def initialize
       @list = {}
@@ -15,7 +20,7 @@ module NScript::NodeBuilder
 
     def build(context, key)
       builder = get(key)
-      throw "Could not find builder name #{key}" if builder.nil?
+      raise NodeNotFound.new(key) if builder.nil?
       builder.build(context)
     end
 

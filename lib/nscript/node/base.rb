@@ -1,10 +1,14 @@
 module NScript::Node
   class Base
-    attr_accessor :name
+    attr_accessor :name, :group
 
     def initialize(context)
       @context = context
-      @guid    = context.guid
+    end
+
+    def guid
+      throw "Node must have name!!!" if name.nil?
+      @guid ||= [group, name, context.guid].join(".")
     end
 
     def context
@@ -12,7 +16,7 @@ module NScript::Node
     end
 
     def var
-      @variable_pipeline ||= VariablePipeline.new(@context, [name, @guid].join("."))
+      @variable_pipeline ||= VariablePipeline.new(@context, guid)
     end
 
     def setup_lifecycle_blocks(run_block=nil, start_block=nil, stop_block=nil)

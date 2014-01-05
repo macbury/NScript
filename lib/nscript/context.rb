@@ -3,9 +3,15 @@ module NScript
 
     def initialize
       @nodes         = {}
+      @connections   = {}
       @variables     = VariableStorage.new 
-      @notifications = Notifications.new
+      @backend       = NScript::Backend::Sync.new
+      @notifications = Notifications.new(@backend)
       @guid          = 0
+    end
+
+    def backend
+      @backend
     end
 
     def variables
@@ -34,7 +40,10 @@ module NScript
     end
 
     def add(name, options={})
-      notifications.trigger("graph.node.add")
+      node = NScript.nodes.build(self, name)
+      @nodes[node.guid] = node
+      notifications.trigger("graph.node.add", { guid: node.guid })
+      return node
     end
 
     def connect(input, output)

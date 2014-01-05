@@ -14,10 +14,16 @@ describe NScript do
     NScript.nodes.size.should == 1
   end
 
+  it "should throw exception about un found node" do
+    context   = NScript::Context.new
+    expect { context.add("base.test") }.to raise_error(NScript::NodeBuilder::NodeNotFound)
+  end
+
   it "should define new example node without callbacks" do
     NScript.node(:test) {}
 
-    test_node = NScript.nodes.build(NScript::Context.new, "base.test")
+    context   = NScript::Context.new
+    test_node = context.add("base.test")
     test_node.should_not be_nil
 
     test_node.name.should eq(:test)
@@ -35,7 +41,7 @@ describe NScript do
     end
 
     context   = NScript::Context.new
-    test_node = NScript.nodes.build(context, "base.foo")
+    test_node = context.add("base.foo")
 
     test_node.var.bar.should  eq(-2)
     test_node.var.foo.should  eq("Hello")

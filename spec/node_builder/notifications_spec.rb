@@ -11,10 +11,10 @@ class DummyContextObject
 end
 
 describe NScript::Notifications do
-
+  let(:backend) { @backend = NScript::Backend::Sync.new }
   it "should allow add actions and run it in proper context" do
     dummy = DummyContextObject.new
-    notifications = NScript::Notifications.new
+    notifications = NScript::Notifications.new(backend)
     notifications.on(:test, dummy) { @test_var = 2 }
     notifications.count(:test).should eq(1)
     notifications.trigger(:test)
@@ -24,7 +24,7 @@ describe NScript::Notifications do
 
   it "should remove events" do
     dummy         = DummyContextObject.new
-    notifications = NScript::Notifications.new
+    notifications = NScript::Notifications.new(backend)
 
     notifications.on(:test, dummy) { @test_var = 2 }
     notifications.count(:test).should eq(1)
@@ -41,6 +41,16 @@ describe NScript::Notifications do
 
     notifications.off(:test, self)
     notifications.count(:test).should eq(0)
+  end
+
+  it "should allow transfer payloads" do
+    notifications = NScript::Notifications.new(backend)
+
+    notifications.on(:test, self) do |payload|
+      payload.should_not be_nil
+      payload[:test].should eq(1)
+    end
+    notifications.trigger(:test, { test: 1 })
   end
 
 end
