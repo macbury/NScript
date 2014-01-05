@@ -15,8 +15,12 @@ module NScript::Node
       @context
     end
 
+    def io
+      @io ||= NScript::Node::IOPipeline.new(self)
+    end
+
     def var
-      @variable_pipeline ||= VariablePipeline.new(@context, guid)
+      @variable_pipeline ||= VariablePipeline.new(self)
     end
 
     def setup_lifecycle_blocks(run_block=nil, start_block=nil, stop_block=nil)
@@ -31,6 +35,10 @@ module NScript::Node
 
     def run_callback?
       respond_to?(:lifecycle_run)
+    end
+
+    def run(payload)
+      lifecycle_run(payload) if run_callback? #TODO Do some exception handling
     end
 
     def stop_callback?

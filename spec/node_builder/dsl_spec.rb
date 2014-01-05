@@ -49,5 +49,8 @@ describe NScript do
 
     test_node.var.bar = 3
     test_node.var.bar.should  eq(3)
+
+    test_node.var.bar = "ssss"
+    test_node.var.bar.should  eq(0)
   end
 end

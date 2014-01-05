@@ -21,8 +21,11 @@ require "nscript/var/integer"
 require "nscript/var/string"
 
 require "nscript/node"
-require "nscript/node/base"
+require "nscript/node/io"
+require "nscript/node/io_pipeline"
 require "nscript/node/variable_pipeline"
+require "nscript/node/base"
+
 require "nscript/dsl"
 require "nscript/variable_storage"
 require "nscript/node"

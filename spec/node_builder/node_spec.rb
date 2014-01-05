@@ -17,7 +17,28 @@ describe NScript::Node::Base do
 
     a.guid.should match(/base\.foo\.\d+/i)
     b.guid.should match(/base\.test\.\d+/i)
-    
   end
 
+  it "should have proper variable key name node_name.node_id.var.var_name" do
+    NScript.node(:test) {
+      var :hello
+    }
+    context = NScript::Context.new
+
+    a = context.add("base.test")
+    a.var.hello_key.should match(/base\.test\.\d+\.var\.hello/)
+  end
+
+  it "should have inputs" do
+    NScript.node(:test) {
+      var    :hello
+      output :foo
+      input  :bar
+    }
+    context = NScript::Context.new
+
+    a = context.add("base.test")
+    a.io.inputs.size.should eq(1)
+    a.io.outputs.size.should eq(1)
+  end
 end

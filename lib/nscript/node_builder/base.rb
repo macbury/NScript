@@ -12,12 +12,12 @@ module NScript::NodeBuilder
       [@group, @name].join(".")
     end
 
-    def read(name)
-      @inputs  << IODef.new(name)
+    def input(name=:input)
+      @inputs    << IODef.new(name)
     end
 
-    def write(name)
-      @outputs << IODef.new(name)
+    def output(name=:output)
+      @outputs   << IODef.new(name)
     end
 
     def var(name, options={})
@@ -44,6 +44,15 @@ module NScript::NodeBuilder
       @variables.each do |var|
         node.var.register_var(var)
       end
+
+      @inputs.each do |input|
+        node.io.register_input(input)
+      end
+
+      @outputs.each do |output|
+        node.io.register_output(output)
+      end
+
       return node
     end
 

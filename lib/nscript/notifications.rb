@@ -5,6 +5,10 @@ module NScript
       @events  = {}
     end
 
+    def events
+      @events.keys
+    end
+
     def on(event, context, &block)
       @events[event] ||= {}
       @events[event][context] = block
@@ -16,7 +20,11 @@ module NScript
 
     def off(event,context=nil)
       if @events[event]
-        @events[event].delete(context) if context
+        if context
+          @events[event].delete(context) 
+        else
+          @events[event].clear
+        end
         @events.delete(event) if @events[event].empty?
       end
     end

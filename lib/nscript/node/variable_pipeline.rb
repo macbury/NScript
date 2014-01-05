@@ -1,27 +1,31 @@
 module NScript::Node
   class VariablePipeline
-    def initialize(context, base_key)
-      @context  = context
-      @base_key = base_key
+    def initialize(node)
+      @node     = node
+      @base_key = node.guid
       throw "Base key cannot be nil!!!" unless @base_key 
     end
 
     def register_var(var_def)
-      key = [@base_key, var_def.name].join(".")
-      @context.variables.setup(key, var_def.to_var)
+      default_key = [@base_key, "var", var_def.name].join(".")
+      @node.context.variables.setup(default_key, var_def.to_var)
 
       key_method = "#{var_def.name}_key"
 
+      define_singleton_method "#{key_method}=" do |key|
+        #return default_key
+      end
+
       define_singleton_method key_method do
-        return key
+        return default_key
       end
 
       define_singleton_method var_def.name do
-        @context.variables.read(send(key_method))
+        @node.context.variables.read(send(key_method))
       end
 
       define_singleton_method "#{var_def.name.to_sym}=" do |val|
-        @context.variables.write(send(key_method), val)
+        @node.context.variables.write(send(key_method), val)
       end
     end
   end

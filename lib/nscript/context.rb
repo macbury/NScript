@@ -18,6 +18,10 @@ module NScript
       @variables 
     end
 
+    def connections
+      @connections
+    end
+
     def notifications
       @notifications
     end
@@ -40,20 +44,33 @@ module NScript
     end
 
     def add(name, options={})
-      node = NScript.nodes.build(self, name)
+      node              = NScript.nodes.build(self, name)
       @nodes[node.guid] = node
       notifications.trigger("graph.node.add", { guid: node.guid })
       return node
     end
 
-    def connect(input, output)
-      notifications.trigger("graph.node.connect")
+    def get(guid)
+      @nodes[guid]
     end
 
-    private
+    # input has many outputs "output" => ["input"]
+    def connect(output, input)
+      raise "Invalid pipe. Should be output" unless output.out?
+      raise "Invalid pipe. Should be input" unless input.in?
+      @connections[output.guid] ||= []
+      @connections[output.guid] << input.guid unless @connections[output.guid].include?(input.guid)
+      notifications.trigger("graph.node.connect", {
+        input:  input.guid,
+        output: input.guid
+      })
+    end
 
-      def run_in_fiber
-        
+    def trigger_output(guid, payload={})
+      output = @connections[guid] || []
+      output.each do |input|
+        notifications.trigger(input, payload)
       end
+    end
   end
 end
