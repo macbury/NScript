@@ -22,9 +22,12 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "pry"
   spec.add_development_dependency "rspec"
+  spec.add_development_dependency "rdoc"
   spec.add_development_dependency "guard"
   spec.add_development_dependency "guard-rspec"
   spec.add_development_dependency "rb-readline"
+  spec.add_development_dependency "guard-yard"
+  spec.add_development_dependency "redcarpet"
   spec.add_development_dependency "logger"
   spec.add_dependency "docile"
 end

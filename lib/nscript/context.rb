@@ -8,6 +8,8 @@ module NScript
       @backend       = NScript::Backend::Sync.new
       @notifications = Notifications.new(@backend)
       @guid          = 0
+
+      @running       = false
     end
 
     def backend
@@ -26,44 +28,106 @@ module NScript
       @notifications
     end
 
+    # Generate unique id
     def guid
       @guid += 1
       @guid
     end
 
+    # Start graph
     def start
+      throw "Already running!" if @running
+      @running = true
       notifications.trigger("graph.start")
     end
 
+    # Stop graph
     def stop
+      throw "Not running!" unless @running
+      @running = false
       notifications.trigger("graph.stop")
     end
 
     def restart
-      notifications.trigger("graph.restart")
+      stop
+      start
     end
 
+    def include?(node)
+      !@nodes[node.guid].nil?
+    end
+
+    # Add node by template key 
+    # @param [String] [template name from NScript.nodes.list]
+    # @return [NScript::Node::Base] [added node]
     def add(name, options={})
       node              = NScript.nodes.build(self, name)
       @nodes[node.guid] = node
+      node.setup
       notifications.trigger("graph.node.add", { guid: node.guid })
       return node
     end
 
+    # Remove node and disconnect connections and trigger "graph.node.remove"
+    # @param [NScipt::Node::Base] [node to remove]
+    def remove(node)
+      if include?(node)
+        @nodes.delete(node.guid)
+        node.on_remove
+        notifications.trigger("graph.node.remove", { guid: node.guid })
+      end
+    end
+
+    # Connect nodes using IO pipes and triggers "graph.node.connect" event
+    # @param [String] [guid of node]
+    # @return [NScript::Node::Base]
     def get(guid)
       @nodes[guid]
     end
 
-    # input has many outputs "output" => ["input"]
-    def connect(output, input)
+    # Are nodes connected
+    # @param [NScript::Node::IO] [output pipe]
+    # @param [NScript::Node::IO] [input pipe]
+    def connected?(output, input)
+      @connections[output.guid] && @connections[output.guid].include?(input.guid)
+    end
+
+    def valid?(output, input)
       raise "Invalid pipe. Should be output" unless output.out?
       raise "Invalid pipe. Should be input" unless input.in?
+      raise "Cannot connect the same node" if input.node == output.node
+      true
+    end
+
+    # Connect nodes using IO pipes and triggers "graph.node.connect" event
+    # @param [NScript::Node::IO] [output pipe]
+    # @param [NScript::Node::IO] [input pipe]
+    def connect(output, input)
+      valid?(output, input)
+
       @connections[output.guid] ||= []
-      @connections[output.guid] << input.guid unless @connections[output.guid].include?(input.guid)
+      @connections[output.guid] << input.guid unless connected?(output, input)
       notifications.trigger("graph.node.connect", {
         input:  input.guid,
-        output: input.guid
+        output: output.guid
       })
+    end
+
+    # Disconnect nodes using IO pipes and triggers "graph.node.disconnect" event
+    # @param [NScript::Node::IO] [output pipe]
+    # @param [NScript::Node::IO] [input pipe]
+    def disconnect(output, input)
+      valid?(output, input)
+
+      if connected?(output, input)
+        @connections[output.guid].delete(input.guid)
+        @connections.delete(output.guid) if @connections[output.guid].empty?
+
+        notifications.trigger("graph.node.disconnect", {
+          input:  input.guid,
+          output: output.guid
+        })
+      end
     end
 
     def trigger_output(guid, payload={})

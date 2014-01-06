@@ -24,6 +24,10 @@ module NScript::NodeBuilder
       builder.build(context)
     end
 
+    def list
+      @list.keys
+    end
+
     def all
       @list.values
     end

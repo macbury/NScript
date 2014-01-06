@@ -23,16 +23,22 @@ module NScript::Node
     end
 
     def inputs
-      @inputs.keys
+      @inputs
     end
 
     def outputs
-      @outputs.keys
+      @outputs
     end
 
     def register_input(io_def)
       @inputs[io_def.name] = IO.new(@node, io_def.name, false)
       @node.context.notifications.on(@inputs[io_def.name].guid, self) { |payload| @node.run(payload) }
+    end
+
+    def unregister_inputs
+      @inputs.each do |key, input|
+        @node.context.notifications.off(input.guid, self)
+      end
     end
 
     def register_output(io_def)
@@ -42,7 +48,6 @@ module NScript::Node
     def write(name, payload={})
       raise PipeNotFound.new(name) unless @outputs[name]
       @node.context.trigger_output(@outputs[name].guid, payload)
-      #@node.context.notifications.trigger(@outputs[name].guid, payload)
     end
   end
 end

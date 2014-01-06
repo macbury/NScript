@@ -18,6 +18,10 @@ module NScript
       @vars[key] = var
     end
 
+    def remove(key)
+      @vars.delete(key)
+    end
+
     def write(key, value)
       if @vars[key]
         @vars[key].set(value) 

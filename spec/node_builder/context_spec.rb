@@ -67,6 +67,26 @@ describe NScript::Context do
     context.trigger_output(a_output.guid)
   end
 
+  it "should disconnect node" do
+    NScript.node(:test) {
+      input :bar
+      output :foo
+    }
+
+    context   = NScript::Context.new
+    a         = context.add("base.test")
+    b         = context.add("base.test")
+
+    a_output  = a.io.get_output(:foo)
+    b_input   = b.io.get_input(:bar)
+
+    context.connect(a_output, b_input)
+    context.connected?(a_output, b_input).should be_true
+
+    context.disconnect(a_output, b_input)
+    context.connected?(a_output, b_input).should be_false
+  end
+
   it "should trigger last node" do
     pay = { a: "b" }
 
@@ -104,6 +124,8 @@ describe NScript::Context do
 
     NScript.node(:b) {
       input  :bar
+      output :buzz
+      run { |payload| io.write(:buzz, pay) }
     }
 
     context   = NScript::Context.new
@@ -122,4 +144,47 @@ describe NScript::Context do
     c.should_receive(:run).with({}).exactly(1)
     context.trigger_output(a_output.guid)
   end
+
+  it "should remove node" do
+    NScript.node(:a) {
+      output :foo
+    }
+
+    NScript.node(:b) {
+      input  :bar
+      output :buzz
+
+      var :test
+
+      run { |payload| io.write(:buzz, pay) }
+    }
+
+
+    context   = NScript::Context.new
+    a         = context.add("base.a")
+    b         = context.add("base.b")
+    c         = context.add("base.b")
+
+    a_output  = a.io.get_output(:foo)
+    b_input   = b.io.get_input(:bar)
+    b_output  = b.io.get_output(:buzz)
+    c_input   = c.io.get_input(:bar)
+
+    context.connect(a_output, b_input)
+    context.connect(b_output, c_input)
+
+    var_names    = context.variables.keys
+    events_names = context.notifications.events
+
+    context.remove(b)
+    b.should_receive(:run).exactly(0)
+    c.should_receive(:run).exactly(0)
+    context.trigger_output(a_output.guid)
+
+    context.get(b.guid).should be_nil
+    var_names.should_not       be(context.variables.keys)
+    events_names.should_not    be(context.notifications.events)
+  end
+
+
 end
