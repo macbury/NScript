@@ -34,3 +34,4 @@ require "nscript/notifications"
 
 require "nscript/backend/base"
 require "nscript/backend/sync"
+require "nscript/backend/eventmachine"

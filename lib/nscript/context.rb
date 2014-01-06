@@ -34,6 +34,10 @@ module NScript
       @guid
     end
 
+    def running?
+      @running
+    end
+
     # Start graph
     def start
       throw "Already running!" if @running

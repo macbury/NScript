@@ -125,7 +125,7 @@ describe NScript::Context do
     NScript.node(:b) {
       input  :bar
       output :buzz
-      run { |payload| io.write(:buzz, pay) }
+      run { |payload| io.write(:buzz, payload) }
     }
 
     context   = NScript::Context.new
@@ -156,7 +156,7 @@ describe NScript::Context do
 
       var :test
 
-      run { |payload| io.write(:buzz, pay) }
+      run { |payload| io.write(:buzz, payload) }
     }
 
 
@@ -186,5 +186,38 @@ describe NScript::Context do
     events_names.should_not    be(context.notifications.events)
   end
 
+  it "should trigger node after start context" do
+    NScript.node(:a) {
+      output :foo
 
+      start do 
+        io.write(:foo) 
+      end
+    }
+
+    NScript.node(:b) {
+      input  :bar
+      output :buzz
+
+      var :test
+
+      run { |payload| io.write(:buzz, payload) }
+    }
+
+    context   = NScript::Context.new
+    a         = context.add("base.a")
+    b         = context.add("base.b")
+    c         = context.add("base.b")
+
+    a_output  = a.io.get_output(:foo)
+    b_input   = b.io.get_input(:bar)
+    b_output  = b.io.get_output(:buzz)
+    c_input   = c.io.get_input(:bar)
+
+    context.connect(a_output, b_input)
+    context.connect(b_output, c_input)
+    c.should_receive(:run).exactly(1)
+
+    context.start
+  end
 end

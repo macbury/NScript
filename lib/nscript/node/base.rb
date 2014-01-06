@@ -10,6 +10,10 @@ module NScript::Node
     def setup
       @context.notifications.on("graph.start", self) { lifecycle_start if start_callback? }
       @context.notifications.on("graph.stop", self)  { lifecycle_stop if stop_callback? }
+
+      if @context.running?
+        lifecycle_start if start_callback?
+      end
     end
 
     def guid
@@ -41,13 +45,13 @@ module NScript::Node
 
     # Fired after node is removed from context
     def on_remove
+      @context.notifications.off("graph.start", self)
+      @context.notifications.off("graph.stop", self)
+
       io.outputs.each { |k, o| @context.connections.delete(o.guid) }
       io.unregister_inputs
       var.unregister
       lifecycle_stop if stop_callback?
-
-      @context.notifications.off("graph.start", self)
-      @context.notifications.off("graph.stop", self)
     end
 
     def start_callback?
