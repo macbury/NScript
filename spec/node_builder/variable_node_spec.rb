@@ -27,5 +27,12 @@ describe NScript::Node::Variable do
     context.assign(var_node, event_node, :test)
     event_node.var.test.should eq("test")
     event_node.var.connected?(:test).should be_true
+
+    second_event_node = context.add_node("base.test")
+    context.assign(var_node, second_event_node, :test)
+    second_event_node.var.test.should eq("test")
+
+    var_node.write("fubar")
+    second_event_node.var.test.should eq(event_node.var.test)
   end
 end
