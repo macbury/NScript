@@ -1,5 +1,7 @@
 require "nscript/version"
 require "docile"
+require "json"
+require "eventmachine"
 
 module NScript
   def self.reset!
@@ -19,6 +21,8 @@ require "nscript/var/boolean"
 require "nscript/var/float"
 require "nscript/var/integer"
 require "nscript/var/string"
+
+require "nscript/persister/save"
 
 require "nscript/node"
 require "nscript/node/helpers/base"

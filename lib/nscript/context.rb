@@ -16,10 +16,16 @@ module NScript
       @backend = new_backend
     end
 
+    def nodes
+      @nodes
+    end
+
+    # @return [NScript::Backend::Base] [current backend]
     def backend
       @backend
     end
 
+    # @return [NScript::VariableStorage] [current variable storage]
     def variables
       @variables 
     end
@@ -28,13 +34,15 @@ module NScript
       @connections
     end
 
+    # @return [NScript::Notifications] [current variable storage]
     def notifications
       @notifications
     end
 
     # Generate unique id
-    def guid
-      @guid += 1
+    # @param [bool] [should increase value]
+    def guid(incr=true)
+      @guid += 1 if incr
       @guid
     end
 

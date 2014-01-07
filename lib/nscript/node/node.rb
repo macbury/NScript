@@ -78,5 +78,9 @@ module NScript::Node
     def execute!
       @context.backend.schedule { run }
     end
+
+    def to_h
+      super.merge({ var: var.connected_variables })
+    end
   end
 end

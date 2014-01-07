@@ -1,7 +1,7 @@
 module NScript::Var
   class Base
-    def initialize(default)
-      @default = default
+    def initialize(default_value)
+      @default = default_value
       set(@default)
     end
 
@@ -11,6 +11,15 @@ module NScript::Var
 
     def get
       throw "You must implement get for #{self.class}"
+    end
+
+    def default
+      @default
+    end
+
+    def default=(default_value)
+      set(default_value)
+      @default = get
     end
 
     def type

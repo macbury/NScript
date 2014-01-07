@@ -1,9 +1,11 @@
 module NScript::Node
   class Base
-    attr_accessor :name, :group
+    attr_accessor :name, :group, :x, :y
 
     def initialize(context)
       @context = context
+      @x       = 0
+      @y       = 0
     end
 
     # identify node type string
@@ -30,6 +32,10 @@ module NScript::Node
     # Fired after node is removed from context
     def on_remove
 
+    end
+
+    def to_h
+      { name: name, group: group, x: x, y: y, type: key }
     end
 
     private

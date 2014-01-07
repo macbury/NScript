@@ -14,6 +14,9 @@ module NScript
       @vars.keys
     end
 
+    # Setup variable for storage
+    # @param [String] [Store NScript::Var::Base key]
+    # @param [Store NScript::Var::Base] [variable definition]
     def setup(key, var)
       @vars[key] = var
     end

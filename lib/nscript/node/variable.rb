@@ -27,11 +27,15 @@ module NScript::Node
 
     def on_remove
       context.notifications.trigger([self.guid, "remove"].join("."))
-      context.variables.remove(self.guid)
+      context.backend.future { context.variables.remove(self.guid) }
     end
 
     def key
-      "variable"
+      "global"
+    end
+
+    def to_h
+      super.merge({ value: @var.default })
     end
   end
 end
