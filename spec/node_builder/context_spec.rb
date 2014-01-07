@@ -1,6 +1,14 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
+class ErrorDummyReciver
+  def error!(payload)
+    
+  end
+end
+
 describe NScript::Context do
+  before(:each) { NScript.nodes.clear! }
+  
   it "should trigger add notification" do
     NScript.node(:test) {}
 
@@ -218,6 +226,27 @@ describe NScript::Context do
     context.connect(b_output, c_input)
     c.should_receive(:run).exactly(1)
 
+    context.start
+  end
+
+  it "should trigger error callback if there is error in node" do
+    NScript.node(:a) {
+      output :foo
+      start { throw "test" }
+    }
+
+    context   = NScript::Context.new
+    a         = context.add("base.a")
+
+    dummy_error = ErrorDummyReciver.new
+    context.notifications.on("graph.error", self) do |payload|
+      dummy_error.error!(payload)
+      payload[:guid].should_not be_nil
+      context.get(payload[:guid]).should_not be_nil
+      payload[:error].should_not be_nil
+    end
+
+    dummy_error.should_receive(:error!).exactly(1)
     context.start
   end
 end

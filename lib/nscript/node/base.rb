@@ -11,12 +11,10 @@ module NScript::Node
 
     # Fired after node have been build and added to context
     def setup
-      @context.notifications.on("graph.start", self) { lifecycle_start if start_callback? }
-      @context.notifications.on("graph.stop", self)  { lifecycle_stop if stop_callback? }
+      @context.notifications.on("graph.start", self) { start }
+      @context.notifications.on("graph.stop", self)  { stop }
 
-      if @context.running?
-        lifecycle_start if start_callback?
-      end
+      start if @context.running?
     end
 
     def guid
@@ -54,7 +52,7 @@ module NScript::Node
       io.outputs.each { |k, o| @context.connections.delete(o.guid) }
       io.unregister_inputs
       var.unregister
-      lifecycle_stop if stop_callback?
+      stop
     end
 
     def start_callback?
@@ -65,8 +63,22 @@ module NScript::Node
       respond_to?(:lifecycle_run)
     end
 
+    def start
+      secure_run do
+        lifecycle_start if start_callback?
+      end
+    end
+
     def run(payload={})
-      lifecycle_run(payload) if run_callback? #TODO Do some exception handling
+      secure_run do
+        lifecycle_run(payload) if run_callback?
+      end
+    end
+
+    def stop
+      secure_run do
+        lifecycle_stop if stop_callback?
+      end
     end
 
     def stop_callback?
@@ -77,5 +89,17 @@ module NScript::Node
     def execute!
       @context.backend.schedule { run }
     end
+
+    private
+
+      # run block if there is any error catch error and trigger notification "graph.error"
+      # @param [Proc] [block to run]
+      def secure_run(&block)
+        begin
+          block.call
+        rescue Exception => e
+          @context.notifications.trigger("graph.error", { guid: self.guid, error: e })
+        end
+      end
   end
 end
