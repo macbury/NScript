@@ -56,10 +56,10 @@ EM.run do
     puts "error: " + payload.inspect
   end
 
-  a         = context.add("base.a")
-  b         = context.add("base.b")
-  c         = context.add("base.b")
-  d         = context.add("base.a")
+  a         = context.add_node("base.a")
+  b         = context.add_node("base.b")
+  c         = context.add_node("base.b")
+  d         = context.add_node("base.a")
 
   a_output  = a.io.get_output(:foo)
   b_input   = b.io.get_input(:bar)

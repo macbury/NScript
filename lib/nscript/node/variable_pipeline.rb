@@ -18,7 +18,7 @@ module NScript::Node
     # @param [String] [target guid in variable storage]
     def connect(name, target)
       @connected_variables[name] = target
-      @node.context.notifications.on([target, "remove"], self) { disconnect(name) }
+      @node.context.notifications.on([target, "remove"].join("."), self) { disconnect(name) }
     end
 
     def connected?(name)

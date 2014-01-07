@@ -34,5 +34,9 @@ describe NScript::Node::Variable do
 
     var_node.write("fubar")
     second_event_node.var.test.should eq(event_node.var.test)
+
+    context.remove(var_node)
+    second_event_node.var.test.should eq("foo")
+    event_node.var.test.should eq("foo")
   end
 end
