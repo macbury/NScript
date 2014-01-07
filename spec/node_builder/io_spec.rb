@@ -9,9 +9,9 @@ describe NScript::Node::IO do
     node              = context.add("base.test")
     
     output = NScript::Node::IO.new(node, "test", true)
-    output.guid.should match(/base\.test\.\d\.output\.test/i)
+    output.guid.should match(/base\.test\.node\.\d\.output\.test/i)
 
     input  = NScript::Node::IO.new(node, "test", false)
-    input.guid.should match(/base\.test\.\d\.input\.test/i)
+    input.guid.should match(/base\.test\.node\.\d\.input\.test/i)
   end
 end

@@ -42,11 +42,10 @@ EM.run do
     stop  { puts "Stop"  }
 
     run do |payload| 
-      #puts "Run: #{payload.inspect} #{Time.now.to_s} as #{guid} #{context.backend.fiber_count}"
-      #data = http.get("http://git.macbury.pl/stats.json")
-      #puts "Fetched page #1: #{data.response}"
-      #io.write(:buzz, payload)
-      raise "Test"
+      puts "Run: #{payload.inspect} #{Time.now.to_s} as #{guid} #{context.backend.fiber_count}"
+      data = http.get("http://git.macbury.pl/stats.json")
+      puts "Fetched page #1: #{data.response}"
+      io.write(:buzz, payload)
     end
   end
 
@@ -69,9 +68,8 @@ EM.run do
 
   context.connect(a_output, b_input)
   context.connect(b_output, c_input)
+
   context.start
   
-  #EM.add_timer(3) { context.stop }
-  #EM.add_timer(5) { context.start }
   EM.add_timer(7) { context.stop }
 end

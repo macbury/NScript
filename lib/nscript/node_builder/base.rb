@@ -37,7 +37,7 @@ module NScript::NodeBuilder
     end
 
     def build(context)
-      node       = NScript::Node::Base.new(context)
+      node       = NScript::Node::Node.new(context)
       node.name  = @name
       node.group = @group
       node.setup_lifecycle_blocks(@run_block, @start_block, @stop_block)

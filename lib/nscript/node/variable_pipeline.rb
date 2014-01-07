@@ -5,6 +5,7 @@ module NScript::Node
       @base_key = node.guid
 
       @registered_variables = []
+      @connected_variables  = {}
       throw "Base key cannot be nil!!!" unless @base_key 
     end
 
@@ -20,11 +21,12 @@ module NScript::Node
       key_method = "#{var_def.name}_key"
 
       define_singleton_method "#{key_method}=" do |key|
-        #return default_key
+        @connected_variables[key_method] = key
+        key
       end
 
       define_singleton_method key_method do
-        return default_key
+        return @connected_variables[key_method] || default_key
       end
 
       define_singleton_method var_def.name do
