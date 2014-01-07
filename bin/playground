@@ -6,5 +6,67 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'rubygems'
 require 'nscript'
 require "pry"
+require "eventmachine"
 
-pry
+EM.run do
+  NScript.node(:a) do
+    output :foo
+
+    var :delay,     type: Float,   default: 1
+    var :last_tick, type: Integer, default: 0
+    var :delta,     type: Integer, default: 0
+
+    start do 
+      var.last_tick = Time.now.to_i
+      execute!
+    end
+
+    run do |p|
+      delay(var.delay)
+      cur           = Time.now.to_i
+      var.delta     = cur - var.last_tick
+      var.last_tick = cur
+      puts "=========="
+      io.write(:foo, { time: var.delta })
+      execute!
+    end
+  end
+
+  NScript.node(:b) do
+    input  :bar
+    output :buzz
+
+    var :test
+
+    start { puts "Start" }
+    stop  { puts "Stop"  }
+
+    run do |payload| 
+      puts "Run: #{payload.inspect} #{Time.now.to_s} as #{guid} #{context.backend.fiber_count}"
+      data = http.get("http://natemat.pl")
+      puts "Fetched page #1: #{data.response_header}"
+      io.write(:buzz, payload)
+    end
+  end
+
+  context         = NScript::Context.new
+  context.backend = NScript::Backend::Eventmachine.new
+
+  a         = context.add("base.a")
+  b         = context.add("base.b")
+  c         = context.add("base.b")
+  d         = context.add("base.a")
+
+  a_output  = a.io.get_output(:foo)
+  b_input   = b.io.get_input(:bar)
+  b_output  = b.io.get_output(:buzz)
+  c_input   = c.io.get_input(:bar)
+
+  context.connect(a_output, b_input)
+  context.connect(b_output, c_input)
+  context.start
+  
+  #EM.add_timer(3) { context.stop }
+  #EM.add_timer(5) { context.start }
+  EM.add_timer(7) { context.stop }
+end

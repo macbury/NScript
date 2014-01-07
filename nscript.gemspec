@@ -30,4 +30,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "redcarpet"
   spec.add_development_dependency "logger"
   spec.add_dependency "docile"
+  spec.add_dependency "eventmachine"
+  spec.add_dependency "em-http-request"
 end

@@ -1,5 +1,8 @@
 module NScript::Node
   class Base
+    include NScript::Node::Helpers::Time
+    include NScript::Node::Helpers::Http
+
     attr_accessor :name, :group
 
     def initialize(context)
@@ -62,12 +65,17 @@ module NScript::Node
       respond_to?(:lifecycle_run)
     end
 
-    def run(payload)
+    def run(payload={})
       lifecycle_run(payload) if run_callback? #TODO Do some exception handling
     end
 
     def stop_callback?
       respond_to?(:lifecycle_stop)
+    end
+
+    # for usage in start trigger. Run main node code in next tick or thread(depends on backend). This ensures all start callbacks are triggered
+    def execute!
+      @context.backend.schedule { run }
     end
   end
 end

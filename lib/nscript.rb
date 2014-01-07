@@ -21,6 +21,10 @@ require "nscript/var/integer"
 require "nscript/var/string"
 
 require "nscript/node"
+require "nscript/node/helpers/base"
+require "nscript/node/helpers/time"
+require "nscript/node/helpers/http"
+
 require "nscript/node/io"
 require "nscript/node/io_pipeline"
 require "nscript/node/variable_pipeline"

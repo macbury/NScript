@@ -6,16 +6,38 @@ module NScript::Backend
       @fibers = []
     end
 
+    def fiber_count
+      @fibers.size
+    end
+
+    def http_get(url, options={})
+      throw "unimplemented"
+    end
+
+    def stop
+      throw "unimplemented"
+    end
+
+    def every(time)
+      throw "unimplemented"
+    end
+
+    def delay(time)
+      throw "unimplemented"
+    end
+
+    def future(&block)
+      throw "unimplemented"
+    end
+
     def schedule(&block)
       throw "unimplemented!"
     end
 
-    private
-
-      def pool_fiber
-        @fibers << Fiber.new { |block| loop { block = fiber_loop(block) } } if @fibers.empty?
-        @fibers.shift
-      end
+    def pool_fiber
+      @fibers << Fiber.new { |block| loop { block = fiber_loop(block) } } if @fibers.empty?
+      @fibers.shift
+    end
 
     protected
       def in_fiber(&block)

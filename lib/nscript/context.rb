@@ -12,6 +12,10 @@ module NScript
       @running       = false
     end
 
+    def backend=(new_backend)
+      @backend = new_backend
+    end
+
     def backend
       @backend
     end
@@ -38,17 +42,19 @@ module NScript
       @running
     end
 
-    # Start graph
+    # Start graph and triggers events "graph.start" and "graph.start_finished"
     def start
       throw "Already running!" if @running
       @running = true
       notifications.trigger("graph.start")
+      notifications.trigger("graph.start_finished")
     end
 
     # Stop graph
     def stop
       throw "Not running!" unless @running
       @running = false
+      backend.stop
       notifications.trigger("graph.stop")
     end
 
