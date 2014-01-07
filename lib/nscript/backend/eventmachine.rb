@@ -47,6 +47,13 @@ module NScript::Backend
       http
     end
 
+    def async(&block)
+      throw "Broken!"
+      f         = Fiber.current
+      operation = EventMachine::Deferrable.future(block, -> { f.resume })
+      resource(operation, -> {operation})
+    end
+
     def delay(time)
       fiber = Fiber.current
       timer = EM.add_timer(time) { fiber.resume }

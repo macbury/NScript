@@ -6,7 +6,7 @@ describe NScript::Node::IO do
 
     recived_payload   = nil
     context           = NScript::Context.new
-    node              = context.add("base.test")
+    node              = context.add_node("base.test")
     
     output = NScript::Node::IO.new(node, "test", true)
     output.guid.should match(/base\.test\.node\.\d\.output\.test/i)

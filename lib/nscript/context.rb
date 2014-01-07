@@ -69,12 +69,20 @@ module NScript
 
     # Add node by template key 
     # @param [String] [template name from NScript.nodes.list]
-    # @return [NScript::Node::Base] [added node]
-    def add(name, options={})
-      node              = NScript.nodes.build(self, name)
-      @nodes[node.guid] = node
-      node.setup
-      notifications.trigger("graph.node.add", { guid: node.guid })
+    # @return [NScript::Node::Node] [added node]
+    def add_node(name, options={})
+      return push(NScript.nodes.build(self, name))
+    end
+
+    # Add node variable
+    # @param [Hash] [Hash for NScript::NodeBuilder::VarDef options]
+    # @return [NScript::Node::Variable] [added node]
+    def add_var(options)
+      node = NScript::Node::Variable.new(self)
+      node.group = "variable"
+      node.name  = "value"
+      push(node)
+      node.setup_variable(options)
       return node
     end
 
@@ -107,6 +115,19 @@ module NScript
       raise "Invalid pipe. Should be input" unless input.in?
       raise "Cannot connect the same node" if input.node == output.node
       true
+    end
+
+    # Assign node variable to variable in node
+    # @param [NScript::Node::Variable] [variable to connect]
+    # @param [NScript::Node::Node] [node with variables] 
+    # @param [String] [variable name] 
+    def assign(variable_node, node, variable_name)
+      node.var.connect(variable_name, variable_node.guid)
+    end
+
+    # Unassign node variable to variable in node
+    def unassign(node, variable_name)
+      node.var.disconnect(variable_name)
     end
 
     # Connect nodes using IO pipes and triggers "graph.node.connect" event
@@ -146,5 +167,17 @@ module NScript
         notifications.trigger(input, payload)
       end
     end
+
+    private
+      
+      # Setup and push node to stack and then triggers "graph.node.add"
+      # @param [NScript::Node::Base] [node to push]
+      # @return [NScript::Node::Base] [added node]
+      def push(node)
+        @nodes[node.guid] = node
+        node.setup
+        notifications.trigger("graph.node.add", { guid: node.guid })
+        node
+      end
   end
 end

@@ -18,7 +18,7 @@ describe NScript::Context do
       recived_payload = payload
     end
     
-    node = context.add("base.test")
+    node = context.add_node("base.test")
     recived_payload.should_not be_nil
     recived_payload[:guid].should_not be_nil
 
@@ -29,7 +29,7 @@ describe NScript::Context do
     NScript.node(:test) {}
 
     context   = NScript::Context.new
-    node      = context.add("base.test")
+    node      = context.add_node("base.test")
 
     context.get(node.guid).should be(node)
   end
@@ -41,8 +41,8 @@ describe NScript::Context do
     }
 
     context   = NScript::Context.new
-    a         = context.add("base.test")
-    b         = context.add("base.test")
+    a         = context.add_node("base.test")
+    b         = context.add_node("base.test")
 
     input  = a.io.get_input(:input)
     output = b.io.get_output(:output)
@@ -64,8 +64,8 @@ describe NScript::Context do
     }
 
     context   = NScript::Context.new
-    a         = context.add("base.a")
-    b         = context.add("base.b")
+    a         = context.add_node("base.a")
+    b         = context.add_node("base.b")
 
     a_output  = a.io.get_output(:foo)
     b_input   = b.io.get_input(:bar)
@@ -82,8 +82,8 @@ describe NScript::Context do
     }
 
     context   = NScript::Context.new
-    a         = context.add("base.test")
-    b         = context.add("base.test")
+    a         = context.add_node("base.test")
+    b         = context.add_node("base.test")
 
     a_output  = a.io.get_output(:foo)
     b_input   = b.io.get_input(:bar)
@@ -109,9 +109,9 @@ describe NScript::Context do
     }
 
     context   = NScript::Context.new
-    a         = context.add("base.a")
-    b         = context.add("base.b")
-    c         = context.add("base.b")
+    a         = context.add_node("base.a")
+    b         = context.add_node("base.b")
+    c         = context.add_node("base.b")
 
     a_output  = a.io.get_output(:foo)
     b_input   = b.io.get_input(:bar)
@@ -137,9 +137,9 @@ describe NScript::Context do
     }
 
     context   = NScript::Context.new
-    a         = context.add("base.a")
-    b         = context.add("base.b")
-    c         = context.add("base.b")
+    a         = context.add_node("base.a")
+    b         = context.add_node("base.b")
+    c         = context.add_node("base.b")
 
     a_output  = a.io.get_output(:foo)
     b_input   = b.io.get_input(:bar)
@@ -169,9 +169,9 @@ describe NScript::Context do
 
 
     context   = NScript::Context.new
-    a         = context.add("base.a")
-    b         = context.add("base.b")
-    c         = context.add("base.b")
+    a         = context.add_node("base.a")
+    b         = context.add_node("base.b")
+    c         = context.add_node("base.b")
 
     a_output  = a.io.get_output(:foo)
     b_input   = b.io.get_input(:bar)
@@ -213,9 +213,9 @@ describe NScript::Context do
     }
 
     context   = NScript::Context.new
-    a         = context.add("base.a")
-    b         = context.add("base.b")
-    c         = context.add("base.b")
+    a         = context.add_node("base.a")
+    b         = context.add_node("base.b")
+    c         = context.add_node("base.b")
 
     a_output  = a.io.get_output(:foo)
     b_input   = b.io.get_input(:bar)
@@ -236,7 +236,7 @@ describe NScript::Context do
     }
 
     context   = NScript::Context.new
-    a         = context.add("base.a")
+    a         = context.add_node("base.a")
 
     dummy_error = ErrorDummyReciver.new
     context.notifications.on("graph.error", self) do |payload|

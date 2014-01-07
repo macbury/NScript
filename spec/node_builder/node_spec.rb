@@ -6,13 +6,13 @@ describe NScript::Node::Base do
     NScript.node(:test) {}
     NScript.node(:foo) {}
     context = NScript::Context.new
-    a = context.add("base.test")
-    b = context.add("base.test")
+    a = context.add_node("base.test")
+    b = context.add_node("base.test")
      
     a.guid.should_not be_nil
     b.guid.should_not be_nil
 
-    a = context.add("base.foo")
+    a = context.add_node("base.foo")
     a.guid.should_not eq(b.guid)
 
     a.guid.should match(/base\.foo\.node\.\d+/i)
@@ -20,12 +20,10 @@ describe NScript::Node::Base do
   end
 
   it "should have proper variable key name node_name.node_id.var.var_name" do
-    NScript.node(:test) {
-      var :hello
-    }
+    NScript.node(:test) { var :hello }
     context = NScript::Context.new
 
-    a = context.add("base.test")
+    a = context.add_node("base.test")
     a.var.hello_key.should match(/base\.test\.node\.\d+\.var\.hello/)
   end
 
@@ -35,9 +33,10 @@ describe NScript::Node::Base do
       output :foo
       input  :bar
     }
+    
     context = NScript::Context.new
 
-    a = context.add("base.test")
+    a = context.add_node("base.test")
     a.io.inputs.size.should eq(1)
     a.io.outputs.size.should eq(1)
   end

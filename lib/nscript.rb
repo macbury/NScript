@@ -30,6 +30,7 @@ require "nscript/node/io_pipeline"
 require "nscript/node/variable_pipeline"
 require "nscript/node/base"
 require "nscript/node/node"
+require "nscript/node/variable"
 
 require "nscript/dsl"
 require "nscript/variable_storage"

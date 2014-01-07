@@ -9,8 +9,34 @@ module NScript::Node
       throw "Base key cannot be nil!!!" unless @base_key 
     end
 
+    def connected_variables
+      @connected_variables
+    end
+
+    # Connect variable to variable in storage. Binds to target.remove event
+    # @param [String] [name of variable defined by var]
+    # @param [String] [target guid in variable storage]
+    def connect(name, target)
+      @connected_variables[name] = target
+      @node.context.notifications.on([target, "remove"], self) { disconnect(name) }
+    end
+
+    def connected?(name)
+      !@connected_variables[name].nil?
+    end
+
+    # Disconnect variable by its name and remove target.remove event
+    # @param [String] [name variable]
+    def disconnect(name)
+      if connected?(name)
+        @node.context.notifications.off([@connected_variables[name], "remove"], self)
+      end
+      @connected_variables.delete(name)
+    end
+
     def unregister
-      @registered_variables.each { |key| @node.context.variables.remove(key) }
+      @connected_variables.values { |key| @node.context.variables.remove(key) }
+      @registered_variables.each  { |key| @node.context.variables.remove(key) }
     end
 
     def register_var(var_def)
@@ -21,12 +47,12 @@ module NScript::Node
       key_method = "#{var_def.name}_key"
 
       define_singleton_method "#{key_method}=" do |key|
-        @connected_variables[key_method] = key
+        @connected_variables[var_def.name] = key
         key
       end
 
       define_singleton_method key_method do
-        return @connected_variables[key_method] || default_key
+        return @connected_variables[var_def.name] || default_key
       end
 
       define_singleton_method var_def.name do
