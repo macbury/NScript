@@ -14,6 +14,11 @@ module NScript
       @vars.keys
     end
 
+    # Setup default values
+    def reset
+      @vars.each { |key, var| var.reset }
+    end
+
     # Setup variable for storage
     # @param [String] [Store NScript::Var::Base key]
     # @param [Store NScript::Var::Base] [variable definition]
@@ -46,6 +51,16 @@ module NScript
         @vars[key].get
       else
         raise VarNotFound.new(key)
+      end
+    end
+
+    def to_h
+      @vars.inject({}) { | h, (key, var) | h[key]=var.default; h }
+    end
+
+    def from_h(hash)
+      hash.each do |key, default|
+        @vars[key].default = default unless @vars[key].nil?
       end
     end
   end

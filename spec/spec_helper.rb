@@ -6,6 +6,10 @@ require 'nscript'
 require 'rspec'
 require "pry"
 
-RSpec.configure do |config|
+Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")].each do |f|
+  require f
+end
 
+RSpec.configure do |config|
+  config.before(:each) { NScript.reset! }
 end

@@ -15,8 +15,8 @@ describe NScript::Node::Base do
     a = context.add_node("base.foo")
     a.guid.should_not eq(b.guid)
 
-    a.guid.should match(/base\.foo\.node\.\d+/i)
-    b.guid.should match(/base\.test\.node\.\d+/i)
+    a.guid.should match(/\!logic:base\.foo\.\d+/i)
+    b.guid.should match(/\!logic:base\.test\.\d+/i)
   end
 
   it "should have proper variable key name node_name.node_id.var.var_name" do
@@ -24,7 +24,7 @@ describe NScript::Node::Base do
     context = NScript::Context.new
 
     a = context.add_node("base.test")
-    a.var.hello_key.should match(/base\.test\.node\.\d+\.var\.hello/)
+    a.var.hello_key.should match(/\!logic:base\.test\.\d+\.var\.hello/)
   end
 
   it "should have inputs" do

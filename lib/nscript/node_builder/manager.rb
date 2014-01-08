@@ -18,10 +18,10 @@ module NScript::NodeBuilder
       @list[key]
     end
 
-    def build(context, key)
+    def build(context, key, options={})
       builder = get(key)
       raise NodeNotFound.new(key) if builder.nil?
-      builder.build(context)
+      builder.build(context, options)
     end
 
     def list

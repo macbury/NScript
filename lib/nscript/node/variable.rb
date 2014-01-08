@@ -9,7 +9,8 @@ module NScript::Node
     # Setup variable
     # @param [Hash] [NScript::NodeBuilder::VarDef options]
     def setup_variable(options)
-      @var = NScript::NodeBuilder::VarDef.new(:value, options).to_var
+      @var_def = options
+      @var     = NScript::NodeBuilder::VarDef.new(:value, options).to_var
       context.variables.setup(self.guid, @var)
     end
 
@@ -30,12 +31,12 @@ module NScript::Node
       context.backend.future { context.variables.remove(self.guid) }
     end
 
-    def key
-      "global"
+    def self.key
+      "@global"
     end
 
     def to_h
-      super.merge({ value: @var.default })
+      super.merge({ value: @var_def })
     end
   end
 end

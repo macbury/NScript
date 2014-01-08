@@ -1,15 +1,21 @@
 module NScript::Node
   class Base
-    attr_accessor :name, :group, :x, :y
+    attr_accessor :name, :group, :x, :y, :note
 
-    def initialize(context)
+    def initialize(context, options={})
       @context = context
       @x       = 0
       @y       = 0
+      @note    = note
+
+      self.note = options[:note] if options.key?(:note)
+      self.guid = options[:guid] if options.key?(:guid)
+      self.x    = options[:x]    if options.key?(:x)
+      self.y    = options[:y]    if options.key?(:y)
     end
 
     # identify node type string
-    def key
+    def self.key
       "base"
     end
 
@@ -21,7 +27,11 @@ module NScript::Node
     # Generate unique id for node
     def guid
       throw "Node must have name!!!" if name.nil?
-      @guid ||= [group, name, key, context.guid].join(".")
+      @guid ||= [self.class.key, [group, name, context.guid].compact.join(".")].join(":")
+    end
+
+    def guid=(nguid)
+      @guid = nguid
     end
 
     # Execution context
@@ -35,7 +45,7 @@ module NScript::Node
     end
 
     def to_h
-      { name: name, group: group, x: x, y: y, type: key }
+      { guid: self.guid, name: name, group: group, x: x, y: y, type: self.class.key, note: note }
     end
 
     private

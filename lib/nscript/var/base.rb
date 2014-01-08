@@ -2,7 +2,7 @@ module NScript::Var
   class Base
     def initialize(default_value)
       @default = default_value
-      set(@default)
+      reset
     end
 
     def set(value)
@@ -11,6 +11,10 @@ module NScript::Var
 
     def get
       throw "You must implement get for #{self.class}"
+    end
+
+    def reset
+      set(@default)
     end
 
     def default

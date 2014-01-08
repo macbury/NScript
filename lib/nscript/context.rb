@@ -30,6 +30,10 @@ module NScript
       @variables 
     end
 
+    def connections=(nc)
+      @connections = nc
+    end
+
     def connections
       @connections
     end
@@ -37,6 +41,10 @@ module NScript
     # @return [NScript::Notifications] [current variable storage]
     def notifications
       @notifications
+    end
+
+    def guid=(ngid)
+      @guid = ngid
     end
 
     # Generate unique id
@@ -63,6 +71,7 @@ module NScript
       throw "Not running!" unless @running
       @running = false
       backend.stop
+      variables.reset
       notifications.trigger("graph.stop")
     end
 
@@ -77,20 +86,29 @@ module NScript
 
     # Add node by template key 
     # @param [String] [template name from NScript.nodes.list]
+    # @param [Hash] [options with guid, x and y]
     # @return [NScript::Node::Node] [added node]
     def add_node(name, options={})
-      return push(NScript.nodes.build(self, name))
+      node = push(NScript.nodes.build(self, name, options), options)
+
+      if options.key?(:assigns)
+        options[:assigns].each do |name, target| 
+          node.var.connect(name, target)
+        end
+      end
+      
+      return node
     end
 
     # Add node variable
     # @param [Hash] [Hash for NScript::NodeBuilder::VarDef options]
+    # @param [Hash] [options with guid, x and y]
     # @return [NScript::Node::Variable] [added node]
-    def add_var(options)
-      node = NScript::Node::Variable.new(self)
-      node.group = "variable"
+    def add_var(var_def_options, options={})
+      node = NScript::Node::Variable.new(self, options)
       node.name  = "value"
-      push(node)
-      node.setup_variable(options)
+      push(node, options)
+      node.setup_variable(var_def_options)
       return node
     end
 
@@ -170,9 +188,11 @@ module NScript
     end
 
     def trigger_output(guid, payload={})
-      output = @connections[guid] || []
-      output.each do |input|
-        notifications.trigger(input, payload)
+      backend.future do
+        output = @connections[guid] || []
+        output.each do |input|
+          notifications.trigger(input, payload)
+        end
       end
     end
 
@@ -180,10 +200,12 @@ module NScript
       
       # Setup and push node to stack and then triggers "graph.node.add"
       # @param [NScript::Node::Base] [node to push]
+      # @param [Hash] [options with guid, x and y]
       # @return [NScript::Node::Base] [added node]
-      def push(node)
+      def push(node, options={})
         @nodes[node.guid] = node
         node.setup
+
         notifications.trigger("graph.node.add", { guid: node.guid })
         node
       end

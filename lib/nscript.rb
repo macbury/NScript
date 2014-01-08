@@ -9,6 +9,7 @@ module NScript
   end
 end
 
+require "nscript/logger"
 require "nscript/ext/boolean"
 
 require "nscript/node_builder/io_def"
@@ -23,6 +24,7 @@ require "nscript/var/integer"
 require "nscript/var/string"
 
 require "nscript/persister/save"
+require "nscript/persister/load"
 
 require "nscript/node"
 require "nscript/node/helpers/base"

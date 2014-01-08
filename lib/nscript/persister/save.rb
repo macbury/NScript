@@ -1,5 +1,4 @@
 module NScript::Persister
-
   class Save
     def initialize(context)
       @context = context
@@ -14,21 +13,40 @@ module NScript::Persister
       @meta = meta_tags
     end
 
-    def save(filepath)
-      nodes = @context.nodes.inject({}) { | h, (key, value) | h[key]=value.to_h; h }
+    def to_h
+      variables = []
+      logic     = []
+
+      @context.nodes.each do |guid, node|
+        if node.class == NScript::Node::Node
+          logic << node.to_h
+        else
+          variables << node.to_h
+        end
+      end
 
       output = { 
         version: NScript::VERSION,
         meta: @meta,
-        graph: {
+        document: {
           guid:         @context.guid,
           connections:  @context.connections,
-          nodes:        nodes
+          logic:        logic,
+          variables:    variables,
+          values:       @context.variables.to_h
         }
       }
 
+      return output
+    end
+
+    def to_json
+      JSON.pretty_generate(to_h)
+    end
+
+    def save(filepath)
       File.open(filepath, "w") do |f|
-        f.puts JSON.pretty_generate(output)
+        f.puts to_json
         f.close
       end 
     end

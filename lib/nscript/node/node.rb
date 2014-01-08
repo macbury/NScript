@@ -5,14 +5,23 @@ module NScript::Node
 
     # Fired after node have been build and added to context
     def setup
+      @running_count = 0
       @context.notifications.on("graph.start", self) { start }
       @context.notifications.on("graph.stop", self)  { stop }
 
       start if @context.running?
     end
 
-    def key
-      "node"
+    def running?
+      @running_count > 0
+    end
+
+    def running_count
+      @running_count
+    end
+
+    def self.key
+      "!logic"
     end
 
     # Returns all ios for this node
@@ -52,21 +61,34 @@ module NScript::Node
       respond_to?(:lifecycle_run)
     end
 
+    # Start node and triggers "graph.node.before_start"
     def start
-      secure_run do
-        lifecycle_start if start_callback?
+      is_running do
+        context.notifications.trigger("graph.node.before_start", { guid: self.guid })
+        secure_run do
+          lifecycle_start if start_callback?
+        end
+        context.notifications.trigger("graph.node.after_start", { guid: self.guid })
       end
     end
 
     def run(payload={})
-      secure_run do
-        lifecycle_run(payload) if run_callback?
+      is_running do
+        context.notifications.trigger("graph.node.before_run", { guid: self.guid })
+        secure_run do
+          lifecycle_run(payload) if run_callback?
+        end
+        context.notifications.trigger("graph.node.after_run", { guid: self.guid })
       end
     end
 
     def stop
-      secure_run do
-        lifecycle_stop if stop_callback?
+      is_running do
+        context.notifications.trigger("graph.node.before_stop", { guid: self.guid })
+        secure_run do
+          lifecycle_stop if stop_callback?
+        end
+        context.notifications.trigger("graph.node.after_stop", { guid: self.guid })
       end
     end
 
@@ -80,7 +102,15 @@ module NScript::Node
     end
 
     def to_h
-      super.merge({ var: var.connected_variables })
+      super.merge({ assigns: var.connected_variables })
     end
+
+    private
+
+      def is_running(&block)
+        @running_count += 1
+        block.call
+        @running_count -= 1
+      end
   end
 end

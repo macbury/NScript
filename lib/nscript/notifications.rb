@@ -30,11 +30,22 @@ module NScript
     end
 
     def trigger(event, payload={})
-      list = @events[event] || []
-
-      list.each do |context,block| 
-        @backend.schedule { context.instance_exec(payload, &block) }
-      end
+      broadcast(false, "triggered.event", { event: event, payload: payload })
+      broadcast(true,  event, payload)
     end
+
+    private
+
+      def broadcast(with_backend, event, payload={})
+        list = @events[event] || []
+
+        list.each do |context, block| 
+          if with_backend
+            @backend.schedule { context.instance_exec(payload, &block) }
+          else
+            context.instance_exec(payload, &block)
+          end
+        end
+      end
   end
 end

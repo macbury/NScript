@@ -22,13 +22,14 @@ EM.run do
     end
 
     run do |p|
-      delay(var.delay)
-      cur           = Time.now.to_i
-      var.delta     = cur - var.last_tick
-      var.last_tick = cur
-      puts "=========="
+      #delay(var.delay)
+      #cur           = Time.now.to_i
+      #var.delta     = cur - var.last_tick
+      #var.last_tick = cur
+      #puts "=========="
+      puts "Running: #{guid}"
       io.write(:foo, { time: var.delta })
-      execute!
+      #execute!
     end
   end
 
@@ -38,13 +39,14 @@ EM.run do
 
     var :test
 
-    start { puts "Start" }
-    stop  { puts "Stop"  }
+    #start { puts "Start" }
+    #stop  { puts "Stop"  }
 
     run do |payload| 
-      puts "Run: #{payload.inspect} #{Time.now.to_s} as #{guid} #{context.backend.fiber_count}"
-      data = http.get("http://git.macbury.pl/stats.json")
-      puts "Fetched page #1: #{data.response}"
+      puts "Running: #{guid}"
+      #puts "Run: #{payload.inspect} #{Time.now.to_s} as #{guid} #{context.backend.fiber_count}"
+      #data = http.get("http://git.macbury.pl/stats.json")
+      #puts "Fetched page #1: #{data.response}"
       io.write(:buzz, payload)
     end
   end
@@ -59,7 +61,7 @@ EM.run do
   a         = context.add_node("base.a")
   b         = context.add_node("base.b")
   c         = context.add_node("base.b")
-  d         = context.add_node("base.a")
+  #d         = context.add_node("base.a")
 
   a_output  = a.io.get_output(:foo)
   b_input   = b.io.get_input(:bar)
@@ -69,7 +71,8 @@ EM.run do
   context.connect(a_output, b_input)
   context.connect(b_output, c_input)
 
+  NScript::Logger.new(context)
   context.start
   
-  EM.add_timer(7) { context.stop }
+  #EM.add_timer(3) { context.stop }
 end
