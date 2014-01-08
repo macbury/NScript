@@ -24,7 +24,7 @@ describe NScript::Node::Base do
     context = NScript::Context.new
 
     a = context.add_node("base.test")
-    a.var.hello_key.should match(/\!logic:base\.test\.\d+\.var\.hello/)
+    a.var.hello_key.should match(/\!logic:base\.test\.\d+\.@variable\.hello/)
   end
 
   it "should have inputs" do

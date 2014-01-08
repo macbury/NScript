@@ -4,7 +4,7 @@ module NScript::Node
       @name     = name
       @output   = output
       @node     = node
-      @guid     = [node.guid, @output ? "output" : "input", name].join(".")
+      @guid     = [node.guid, @output ? "$output" : "$input", name].join(".")
     end
 
     def node

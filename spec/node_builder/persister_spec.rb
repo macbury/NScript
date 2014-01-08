@@ -5,7 +5,6 @@ describe NScript::Persister do
     context   = ContextBuilder.build_with_three_connected_nodes_and_var
     #NScript::Logger.new(context)
     context.start
-    #puts "=-=-=--=-=-=-=-=-=-=-"
     persister = NScript::Persister::Save.new(context)
 
     json      = persister.to_json

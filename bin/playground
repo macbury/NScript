@@ -22,14 +22,15 @@ EM.run do
     end
 
     run do |p|
-      #delay(var.delay)
-      #cur           = Time.now.to_i
-      #var.delta     = cur - var.last_tick
-      #var.last_tick = cur
+      puts "Current #{var.delay}"
+      delay(var.delay)
+      cur           = Time.now.to_i
+      var.delta     = cur - var.last_tick
+      var.last_tick = cur
       #puts "=========="
       puts "Running: #{guid}"
       io.write(:foo, { time: var.delta })
-      #execute!
+      execute!
     end
   end
 
@@ -37,15 +38,16 @@ EM.run do
     input  :bar
     output :buzz
 
-    var :test
+    var :test, type: Integer, default: 1
 
     #start { puts "Start" }
     #stop  { puts "Stop"  }
 
     run do |payload| 
       puts "Running: #{guid}"
+      var.test += 1
       #puts "Run: #{payload.inspect} #{Time.now.to_s} as #{guid} #{context.backend.fiber_count}"
-      #data = http.get("http://git.macbury.pl/stats.json")
+      data = http.get("http://git.macbury.pl/stats.json")
       #puts "Fetched page #1: #{data.response}"
       io.write(:buzz, payload)
     end
@@ -63,6 +65,12 @@ EM.run do
   c         = context.add_node("base.b")
   #d         = context.add_node("base.a")
 
+  delay_var = context.add_var( type: Integer, default: 1 )
+  delay_var.note = "Shared delay"
+  
+  context.assign(delay_var, a, :delay)
+  context.assign(delay_var, b, :test)
+
   a_output  = a.io.get_output(:foo)
   b_input   = b.io.get_input(:bar)
   b_output  = b.io.get_output(:buzz)
@@ -71,7 +79,9 @@ EM.run do
   context.connect(a_output, b_input)
   context.connect(b_output, c_input)
 
-  NScript::Logger.new(context)
+  #NScript::Logger.new(context)
+  persister = NScript::Persister::Save.new(context)
+  persister.save("test.nscript")
   context.start
   
   #EM.add_timer(3) { context.stop }

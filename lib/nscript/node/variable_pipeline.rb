@@ -40,7 +40,7 @@ module NScript::Node
     end
 
     def register_var(var_def)
-      default_key = [@base_key, "var", var_def.name].join(".")
+      default_key = [@base_key, "@variable", var_def.name].join(".")
       @registered_variables << default_key
       @node.context.variables.setup(default_key, var_def.to_var)
 
