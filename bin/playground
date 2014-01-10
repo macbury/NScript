@@ -79,10 +79,12 @@ EM.run do
   context.connect(a_output, b_input)
   context.connect(b_output, c_input)
 
-  #NScript::Logger.new(context)
+  NScript::Logger.new(context)
   persister = NScript::Persister::Save.new(context)
   persister.save("test.nscript")
   context.start
   
-  #EM.add_timer(3) { context.stop }
+  EM.add_timer(3) { 
+    context.unassign(a, :delay)
+  }
 end

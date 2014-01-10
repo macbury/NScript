@@ -6,7 +6,7 @@ module NScript
       @connections   = {}
       @variables     = VariableStorage.new 
       @backend       = NScript::Backend::Sync.new
-      @notifications = Notifications.new(@backend)
+      @notifications = Inferno::Event.new
       @guid          = 0
 
       @running       = false

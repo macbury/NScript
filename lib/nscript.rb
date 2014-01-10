@@ -2,6 +2,7 @@ require "nscript/version"
 require "docile"
 require "json"
 require "eventmachine"
+require "inferno"
 
 module NScript
   def self.reset!
@@ -42,7 +43,6 @@ require "nscript/dsl"
 require "nscript/variable_storage"
 require "nscript/node"
 require "nscript/context"
-require "nscript/notifications"
 
 require "nscript/backend/base"
 require "nscript/backend/sync"
